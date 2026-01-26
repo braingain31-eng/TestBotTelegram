@@ -18,15 +18,22 @@ app = Flask(__name__)
 #     return 'OK', 200
 
 @app.route('/webhook', methods=['POST'])
-def webhook():
+def webhook():                          # ← НЕ async
     if request.headers.get('content-type') != 'application/json':
         abort(400)
-    
+
     json_string = request.get_data(as_text=True)
-    update = Update.de_json(json_string, bot)
     
-    # Важно: запуск асинхронной обработки в синхронном контексте
-    asyncio.run(dp.feed_update(bot, update))
+    try:
+        update = Update.de_json(json_string, bot)
+        if update:
+            # Запускаем асинхронную обработку в синхронном контексте
+            asyncio.run(dp.feed_update(bot, update))
+    except Exception as e:
+        # Логируем ошибку, чтобы видеть в Cloud Run Logs
+        print(f"Ошибка обработки обновления: {e}")
+        # Можно также отправить себе в админ-канал
+        # asyncio.run(bot.send_message(ADMIN_ID, f"Webhook error: {e}"))
     
     return 'OK', 200
 
@@ -37,5 +44,5 @@ async def on_startup():
 
 if __name__ == '__main__':
     init_firebase()
-    asyncio.run(on_startup())
-    app.run(host='0.0.0.0', port=Config.PORT)
+    # asyncio.run(on_startup())
+    # app.run(host='0.0.0.0', port=Config.PORT)
