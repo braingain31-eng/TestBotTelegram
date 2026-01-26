@@ -1,24 +1,21 @@
+# main.py
 import asyncio
+import logging
 from flask import Flask, request, abort
-from aiogram import Bot, Dispatcher
 from aiogram.types import Update
 from config import Config
-from bot import dp, bot
+from bot import bot, dp
 from database import init_firebase
 
 app = Flask(__name__)
 
-# @app.route('/webhook', methods=['POST'])
-# async def webhook():
-#     if request.headers.get('content-type') != 'application/json':
-#         abort(400)
-#     json_string = request.get_data(as_text=True)
-#     update = Update.parse_raw(json_string)
-#     await dp.feed_update(bot, update)
-#     return 'OK', 200
+# Настраиваем логирование
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @app.route('/webhook', methods=['POST'])
-def webhook():                          # ← НЕ async
+def webhook():
+    """Обработчик webhook от Telegram (синхронный)"""
     if request.headers.get('content-type') != 'application/json':
         abort(400)
 
@@ -27,22 +24,37 @@ def webhook():                          # ← НЕ async
     try:
         update = Update.de_json(json_string, bot)
         if update:
-            # Запускаем асинхронную обработку в синхронном контексте
-            asyncio.run(dp.feed_update(bot, update))
+            # Запускаем асинхронную обработку в существующем event loop
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(dp.feed_update(bot, update))
     except Exception as e:
-        # Логируем ошибку, чтобы видеть в Cloud Run Logs
-        print(f"Ошибка обработки обновления: {e}")
-        # Можно также отправить себе в админ-канал
-        # asyncio.run(bot.send_message(ADMIN_ID, f"Webhook error: {e}"))
-    
+        logger.error(f"Ошибка обработки обновления: {type(e).__name__}: {e}", exc_info=True)
+        # Опционально: отправить ошибку админу
+        # asyncio.create_task(bot.send_message(Config.ADMIN_ID, f"Webhook error: {e}"))
+
     return 'OK', 200
 
-async def on_startup():
-    webhook_url = Config.WEBHOOK_URL
-    await bot.set_webhook(webhook_url)
-    print(f"Webhook установлен: {webhook_url}")
+
+async def set_webhook():
+    """Установка webhook при старте приложения"""
+    try:
+        await bot.set_webhook(Config.WEBHOOK_URL)
+        logger.info(f"Webhook успешно установлен: {Config.WEBHOOK_URL}")
+    except Exception as e:
+        logger.error(f"Ошибка установки webhook: {e}")
+
+
+def main():
+    """Точка входа"""
+    init_firebase()
+    
+    # Запускаем установку webhook асинхронно
+    asyncio.run(set_webhook())
+    
+    # Gunicorn сам запустит Flask, поэтому app.run() здесь не нужен
+
 
 if __name__ == '__main__':
-    init_firebase()
-    # asyncio.run(on_startup())
-    # app.run(host='0.0.0.0', port=Config.PORT)
+    # Для локального тестирования (flask run)
+    main()
+    # app.run(host='0.0.0.0', port=Config.PORT, debug=True)
