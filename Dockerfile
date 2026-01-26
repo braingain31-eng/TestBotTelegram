@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED True
 ENV APP_HOME /app 
 WORKDIR $APP_HOME
 
-# Install dependencies
+# Install dependencies2
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
