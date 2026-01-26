@@ -8,13 +8,26 @@ from database import init_firebase
 
 app = Flask(__name__)
 
+# @app.route('/webhook', methods=['POST'])
+# async def webhook():
+#     if request.headers.get('content-type') != 'application/json':
+#         abort(400)
+#     json_string = request.get_data(as_text=True)
+#     update = Update.parse_raw(json_string)
+#     await dp.feed_update(bot, update)
+#     return 'OK', 200
+
 @app.route('/webhook', methods=['POST'])
-async def webhook():
+def webhook():
     if request.headers.get('content-type') != 'application/json':
         abort(400)
+    
     json_string = request.get_data(as_text=True)
-    update = Update.parse_raw(json_string)
-    await dp.feed_update(bot, update)
+    update = Update.de_json(json_string, bot)
+    
+    # Важно: запуск асинхронной обработки в синхронном контексте
+    asyncio.run(dp.feed_update(bot, update))
+    
     return 'OK', 200
 
 async def on_startup():
