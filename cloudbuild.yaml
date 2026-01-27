@@ -24,3 +24,6 @@ steps:
       - '--quiet'
 
 images: ['gcr.io/$PROJECT_ID/testbottelegram']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
