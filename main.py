@@ -47,14 +47,15 @@ async def set_webhook():
 def main():
     """Точка входа"""
     init_firebase()
-    
+    logger.info(f"----------старт  main")
     # Запускаем установку webhook асинхронно
-    asyncio.run(set_webhook())
+    # asyncio.run(set_webhook())
     
     # Gunicorn сам запустит Flask, поэтому app.run() здесь не нужен
 
 
 if __name__ == '__main__':
     # Для локального тестирования (flask run)
+    logger.info(f"----------старт  __name__")
     main()
     # app.run(host='0.0.0.0', port=Config.PORT, debug=True)
