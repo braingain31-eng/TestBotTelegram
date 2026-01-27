@@ -1,0 +1,26 @@
+steps:
+  # 1. Собираем Docker-образ
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/testbottelegram', '.']
+
+  # 2. Пушим образ в Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/testbottelegram']
+
+  # 3. Деплоим новую ревизию в Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'testbottelegram'                 # имя вашего сервиса в Cloud Run
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/testbottelegram'
+      - '--region'
+      - 'europe-west1'                    # ваш регион
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'         # если публичный доступ
+      - '--quiet'
+
+images: ['gcr.io/$PROJECT_ID/testbottelegram']
