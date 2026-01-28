@@ -5,7 +5,6 @@ from config import Config
 import json
 from datetime import datetime
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 db = None
