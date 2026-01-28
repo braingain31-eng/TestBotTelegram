@@ -11,11 +11,19 @@ db = None
 
 def init_firebase():
     global db
-    logger.info(f"FIREBASE_CREDENTIALS type: {type(Config.FIREBASE_CREDENTIALS_PATH)}, value preview: {repr(Config.FIREBASE_CREDENTIALS_PATH[:100])}...")
-    # cred = credentials.Certificate(json.loads(Config.FIREBASE_CREDENTIALS_PATH))
-    cred = credentials.Certificate(Config.FIREBASE_CREDENTIALS_PATH)
-    firebase_admin.initialize_app(cred)
-    db = firestore_async.client()
+    try:
+        # Берем строку JSON из переменной окружения
+        cred_dict = json.loads(Config.FIREBASE_CREDENTIALS)
+        cred = credentials.Certificate("/etc/secrets/firebase.json")  # ← передаём словарь, а не строку
+        firebase_admin.initialize_app(cred)
+        db = firestore_async.client()
+        logger.info("Firebase успешно инициализирован из строки JSON")
+    except json.JSONDecodeError as e:
+        logger.critical(f"Некорректный JSON в FIREBASE_CREDENTIALS: {e}")
+        raise
+    except Exception as e:
+        logger.critical(f"Ошибка инициализации Firebase: {e}", exc_info=True)
+        raise
 
 async def save_user(user_id: int, username: str, full_name: str):
     doc_ref = db.collection('users').document(str(user_id))
