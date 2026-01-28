@@ -67,7 +67,7 @@ async def service_handler(call: CallbackQuery):
     )
     await call.answer()
 
-@router.callback_query(F.data.startswith("region_"))
+@router.callback_query(F.data.startswith("region||"))
 async def region_handler(call: CallbackQuery):
     # Разбираем callback_data: region_service_rent_house_bali
     parts = call.data.split("||")
