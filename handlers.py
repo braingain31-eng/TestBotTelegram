@@ -21,6 +21,19 @@ service_map = {
     "service_question": "Задать вопрос"
 }
 
+REGIONS = [
+    ("🌏 Северный Гоа", "north_goa"),
+    ("🌏 Бали", "bali"),
+    ("🌏 Дубай", "dubai"),
+    ("🌏 Шри Ланка", "sri_lanka"),
+    ("🌏 Бангкок", "bangkok"),
+    ("🌏 Пхукет", "phuket"),
+    ("🌏 Ко Панган", "ko_phangan"),
+    ("🌏 Да Нанг", "da_nang"),
+    ("🌏 Ня Чанг", "nha_trang"),
+    ("🌏 Сингапур", "singapore"),
+]
+
 @router.message(Command("start"))
 async def start_handler(message: Message):
     user_id = message.from_user.id
