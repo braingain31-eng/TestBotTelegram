@@ -6,6 +6,8 @@ from aiogram.types import Update
 from config import Config
 from bot import bot, dp
 from database import init_firebase
+import nest_asyncio
+nest_asyncio.apply()
 
 app = Flask(__name__)
 
