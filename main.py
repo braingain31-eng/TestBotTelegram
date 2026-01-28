@@ -5,17 +5,27 @@ from flask import Flask, request, abort
 from aiogram.types import Update
 from config import Config
 from bot import bot, dp
-from database import init_firebase
+from database import init_firebase, db
 from handlers import router
 import nest_asyncio
-nest_asyncio.apply()
-
-dp.include_router(router)
-app = Flask(__name__)
 
 # Настраиваем логирование
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+nest_asyncio.apply()
+
+dp.include_router(router)
+
+# Запускаем инициализацию Firebase сразу при импорте модуля
+try:
+    init_firebase()
+    logger.info("---------- Firebase успешно инициализирован при старте приложения ----------")
+except Exception as e:
+    logger.critical(f"Критическая ошибка инициализации Firebase при старте: {e}", exc_info=True)
+    raise  # приложение не должно стартовать без БД
+
+app = Flask(__name__)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -40,27 +50,28 @@ def webhook():
     return 'OK', 200
 
 
-async def set_webhook():
-    """Установка webhook при старте приложения"""
-    try:
-        await bot.set_webhook(Config.WEBHOOK_URL)
-        logger.info(f"Webhook успешно установлен: {Config.WEBHOOK_URL}")
-    except Exception as e:
-        logger.error(f"Ошибка установки webhook: {e}")
+# async def set_webhook():
+#     """Установка webhook при старте приложения"""
+#     try:
+#         await bot.set_webhook(Config.WEBHOOK_URL)
+#         logger.info(f"Webhook успешно установлен: {Config.WEBHOOK_URL}")
+#     except Exception as e:
+#         logger.error(f"Ошибка установки webhook: {e}")
 
 
-def main():
-    """Точка входа"""
-    init_firebase()
-    logger.info(f"----------старт  main")
-    # Запускаем установку webhook асинхронно
-    # asyncio.run(set_webhook())
+# def main():
+#     """Точка входа"""
+#     init_firebase()
+#     logger.info(f"----------старт  main")
+#     # Запускаем установку webhook асинхронно
+#     # asyncio.run(set_webhook())
     
-    # Gunicorn сам запустит Flask, поэтому app.run() здесь не нужен
+#     # Gunicorn сам запустит Flask, поэтому app.run() здесь не нужен
 
 
 if __name__ == '__main__':
     # Для локального тестирования (flask run)
-    logger.info(f"----------старт  __name__")
-    main()
+    # logger.info(f"----------старт  __name__")
+    # main()
+    pass
     # app.run(host='0.0.0.0', port=Config.PORT, debug=True)
