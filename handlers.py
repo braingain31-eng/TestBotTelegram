@@ -70,7 +70,7 @@ async def service_handler(call: CallbackQuery):
 @router.callback_query(F.data.startswith("region_"))
 async def region_handler(call: CallbackQuery):
     # Разбираем callback_data: region_service_rent_house_bali
-    parts = call.data.split("_")
+    parts = call.data.split("||")
     if len(parts) != 3:
         await call.answer("Ошибка выбора региона")
         return

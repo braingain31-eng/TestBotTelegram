@@ -33,11 +33,12 @@ async def save_user(user_id: int, username: str, full_name: str):
         'registered_at': datetime.utcnow().isoformat()
     }, merge=True)
 
-async def save_request(user_id: int, service_type: str):
+async def save_request(user_id: int, service_type: str, region: str = "Не указан"):
     doc_ref = db.collection('requests').document()
     await doc_ref.set({
         'user_id': user_id,
         'service_type': service_type,
+        'region': region,
         'timestamp': datetime.utcnow().isoformat(),
         'status': 'new'
     })

@@ -39,10 +39,9 @@ def region_menu(service_key: str):
     ]
     
     for name, key in regions:
-        # Передаём: region + service_key + region_key
         kb.add(InlineKeyboardButton(
             text=name,
-            callback_data=f"region_{service_key}_{key}"
+            callback_data=f"region||{service_key}||{key}"
         ))
     
     kb.adjust(2)  # 2 кнопки в ряд
