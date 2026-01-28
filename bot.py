@@ -1,8 +1,8 @@
 from aiogram import Bot, Dispatcher
 from config import Config
-from handlers import router
+# from handlers import router
 
 bot = Bot(token=Config.BOT_TOKEN)
 dp = Dispatcher()
 
-dp.include_router(router)
+# dp.include_router(router)

@@ -6,9 +6,11 @@ from aiogram.types import Update
 from config import Config
 from bot import bot, dp
 from database import init_firebase
+from handlers import router
 import nest_asyncio
 nest_asyncio.apply()
 
+dp.include_router(router)
 app = Flask(__name__)
 
 # Настраиваем логирование
