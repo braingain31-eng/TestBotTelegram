@@ -19,3 +19,31 @@ def main_menu():
         kb.add(button)
     kb.adjust(2)  # 2 кнопки в ряд
     return kb.as_markup()
+
+def region_menu(service_key: str):
+    """
+    Меню выбора региона (после выбора услуги)
+    """
+    kb = InlineKeyboardBuilder()
+    regions = [
+        ("🌏 Северный Гоа", "north_goa"),
+        ("🌏 Бали", "bali"),
+        ("🌏 Дубай", "dubai"),
+        ("🌏 Шри Ланка", "sri_lanka"),
+        ("🌏 Бангкок", "bangkok"),
+        ("🌏 Пхукет", "phuket"),
+        ("🌏 Ко Панган", "ko_phangan"),
+        ("🌏 Да Нанг", "da_nang"),
+        ("🌏 Ня Чанг", "nha_trang"),
+        ("🌏 Сингапур", "singapore"),
+    ]
+    
+    for name, key in regions:
+        # Передаём: region + service_key + region_key
+        kb.add(InlineKeyboardButton(
+            text=name,
+            callback_data=f"region_{service_key}_{key}"
+        ))
+    
+    kb.adjust(2)  # 2 кнопки в ряд
+    return kb.as_markup()
