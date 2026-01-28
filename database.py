@@ -8,7 +8,7 @@ db = None
 
 def init_firebase():
     global db
-    cred = credentials.Certificate(json.loads(Config.FIREBASE_CREDENTIALS))
+    cred = credentials.Certificate(json.loads(Config.FIREBASE_CREDENTIALS_PATH))
     firebase_admin.initialize_app(cred)
     db = firestore_async.client()
 
