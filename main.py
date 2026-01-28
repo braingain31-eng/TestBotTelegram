@@ -22,7 +22,8 @@ def webhook():
     json_string = request.get_data(as_text=True)
     
     try:
-        update = Update.de_json(json_string, bot)
+        # update = Update.de_json(json_string, bot)
+        update = Update.model_validate_json(json_string)
         if update:
             # Запускаем асинхронную обработку в существующем event loop
             loop = asyncio.get_event_loop()
