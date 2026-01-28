@@ -13,7 +13,7 @@ def init_firebase():
     global db
     try:
         # Берем строку JSON из переменной окружения
-        cred_dict = json.loads(Config.FIREBASE_CREDENTIALS)
+        # cred_dict = json.loads(Config.FIREBASE_CREDENTIALS)
         cred = credentials.Certificate("/etc/secrets/firebase.json")  # ← передаём словарь, а не строку
         firebase_admin.initialize_app(cred)
         db = firestore_async.client()
