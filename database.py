@@ -8,6 +8,7 @@ db = None
 
 def init_firebase():
     global db
+    logger.info(f"FIREBASE_CREDENTIALS type: {type(Config.FIREBASE_CREDENTIALS_PATH)}, value preview: {repr(Config.FIREBASE_CREDENTIALS_PATH[:100])}...")
     # cred = credentials.Certificate(json.loads(Config.FIREBASE_CREDENTIALS_PATH))
     cred = credentials.Certificate(Config.FIREBASE_CREDENTIALS_PATH)
     firebase_admin.initialize_app(cred)
