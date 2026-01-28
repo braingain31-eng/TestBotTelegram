@@ -1,4 +1,5 @@
 from aiogram import Router, F
+from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 from bot import bot
 from config import Config
@@ -7,7 +8,7 @@ from keyboards import main_menu
 
 router = Router()
 
-@router.message(commands=['start'])
+@router.message(Command("start"))
 async def start_handler(message: Message):
     user_id = message.from_user.id
     username = message.from_user.username or ""
@@ -52,7 +53,7 @@ async def service_handler(call: CallbackQuery):
     await bot.send_message(Config.ADMIN_CHANNEL_ID, log_text)
     await call.answer()
 
-@router.message(commands=['send'])
+@router.message(Command("send"))
 async def broadcast_handler(message: Message):
     if message.from_user.id != Config.ADMIN_ID:
         await message.answer("Доступ запрещён.")
